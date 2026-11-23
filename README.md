@@ -6,6 +6,8 @@ Un aplicativo **completo y funcionando** que muestra el proceso de integración 
 
 > **Para qué sirve.** Es la versión de referencia: se ejecuta, se estudia y luego cada equipo **aplica lo mismo a su proyecto**.
 
+> 📘 **¿Primera vez?** Sigan el **[PASO_A_PASO.md](PASO_A_PASO.md)**: cómo prenderlo y cómo usar el aplicativo, con pantallas y ejercicios.
+
 ![El proceso: XM, NOAA y EnerAndes entran a bronce; las ventas pasan a plata; dbt arma el oro; el aplicativo lo lee](docs/img/proceso_capas.png)
 
 ---
@@ -87,6 +89,7 @@ Después del `docker compose up`, **todo se hace desde el navegador**: no hay qu
 ```text
 observatorio-energia-docker\
 ├── README.md                      ← este documento
+├── PASO_A_PASO.md                 ← la guia de uso para estudiantes, con pantallas y ejercicios
 ├── TUTORIAL_PUBLICAR_RENDER.md    ← publicarlo en internet, gratis
 ├── Dockerfile                     ← la receta de la imagen: Python + librerias + codigo
 ├── docker-compose.yml             ← los 2 contenedores: pipeline y app
