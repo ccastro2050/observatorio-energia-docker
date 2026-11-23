@@ -3,6 +3,9 @@ Pagina 3 · MODELO ORO (dbt).
 Con un boton: dbt build (modelos + pruebas) y la exportacion a Parquet.
 Muestra el modelo estrella y lo que escribe dbt.
 """
+# Path: para armar la ruta de la imagen
+from pathlib import Path
+
 # streamlit: los controles de la pagina
 import streamlit as st
 
@@ -17,16 +20,10 @@ st.write("**dbt** lee bronce y plata, arma el **modelo estrella** dentro de la b
          "`data/observatorio.duckdb` y **prueba** la calidad. Luego las tablas se copian a "
          "archivos `.parquet` en `data/gold/`, que es lo que lee el dashboard.")
 
-# El modelo estrella, dibujado con texto
-# st.code: muestra el texto en un recuadro de letra fija (language=None: sin colores)
-st.code("""
-            dim_mes (mes_id)                 dim_municipio (municipio_id)
-                   \\                              /
-                    \\                            /
-                     fact_ventas  ── una venta: mes, municipio, segmento, Bolsa/Contrato, kWh, $
-                          │  mes_id
-                     fact_mercado ── un mes: embalses, precio bolsa, precio contrato, ONI, fase
-""", language=None)
+# El modelo estrella, en imagen (app/img/modelo_estrella.png)
+# Path(__file__).parent.parent: de app/paginas/ sube a app/; ahi esta la carpeta img/
+st.image(str(Path(__file__).resolve().parent.parent / "img" / "modelo_estrella.png"),
+         caption="La capa oro: dos dimensiones (mes y municipio) y dos tablas de hechos (ventas y mercado)")
 
 # Lo que necesita dbt: que existan los archivos de bronce y plata
 # Lista de los archivos de bronce que NO existen todavia

@@ -266,9 +266,58 @@ Las páginas 1, 2 y 3 hacen lo mismo que **Correr todo**, pero **capa por capa**
 
 > 💡 **Por qué así:** cada capa tiene que saber qué hacer con el dato nuevo. La app solo pone **botones encima** del proceso: el proceso se define en el código. Es lo mismo que hace cada equipo en la entrega final con **sus** métricas. Los códigos de XM están en el catálogo: https://github.com/EquipoAnaliticaXM/API_XM
 
+### La página 1, pestaña NOAA: un archivo de texto en internet
+
+![La pestaña NOAA: la URL del archivo, el botón Descargar de NOAA, el aviso de 921 filas y las últimas filas con SEAS, YR, TOTAL y ANOM](docs/img/app_noaa.png)
+
+| Lo que aparece | Qué significa |
+|---|---|
+| **URL del archivo** | La dirección del archivo de NOAA. **Se puede cambiar** por otra, sin tocar el código |
+| **Descargar de NOAA** | Baja el archivo y lo guarda en `data/bronze/noaa_oni.parquet`, tal cual |
+| ✅ `bronze/noaa_oni.parquet: 921 filas` | Una fila por **trimestre**, desde 1950 |
+| `SEAS` | El trimestre móvil: `JAS` = julio-agosto-septiembre |
+| `YR` | El año |
+| `TOTAL` | La temperatura del mar en el Pacífico (°C) |
+| `ANOM` | La **anomalía**: cuánto más caliente que lo normal. **+0,5 o más = El Niño**. En 2026 llega a **+2,46**: un Niño fuerte |
+
+> 📌 Aquí **todo sigue siendo texto** (`'2.46'`, no el número 2,46): es la capa bronce. dbt lo convierte a número y le pone la fase (*El Niño*, *Neutral*, *La Niña*) en la capa oro.
+
+### La página 1, pestaña EnerAndes: el Excel, con sus errores
+
+![La pestaña EnerAndes después de cargar: 1.113 filas en bronce, con CONTRATOS en mayúscula y bolsa en minúscula, tal cual vienen en el Excel](docs/img/app_excel_bronce.png)
+
+| Lo que aparece | Qué significa |
+|---|---|
+| **Excel en uso** | Cuál Excel se carga: el original o uno que ustedes subieron |
+| ✅ `bronze/enerandes_ventas.parquet: 1,113 filas` | El Excel quedó en bronce **completo**, con todas sus filas |
+| `CONTRATOS`, `Contrato`, `bolsa`, `Bolsa` | El **mismo** tipo de compra escrito de varias formas. En bronce **no se corrige**: lo arregla la capa plata |
+
+### ¿Dónde quedan los archivos? En su PC **y** en Docker
+
+Es **la misma carpeta**, compartida. Lo hace esta línea de `docker-compose.yml`:
+
+```yaml
+volumes:
+  - ./data:/app/data      # la carpeta data/ del PC = la carpeta /app/data del contenedor
+```
+
+| Dónde | Ruta |
+|---|---|
+| En su PC | `observatorio-energia-docker\data\bronze\` (ábranla en VS Code) |
+| Dentro del contenedor | `/app/data/bronze/` |
+
+Se llama **volumen**: lo que el contenedor escribe, ustedes lo ven en el PC, y al revés. Por eso, al apagar Docker (`docker compose down`), **los datos no se pierden**.
+
 ### La página 2: limpiar
 
 ![La página Limpiar: las reglas, las filas antes y después, y el municipio escrito de varias formas frente a un solo nombre](docs/img/app_limpiar.png)
+
+| Lo que aparece | Qué significa |
+|---|---|
+| **Filas en bronce 1.113 · Filas limpias 1.043 · Descartadas 70** | Las 70 son la fila `TOTAL`, las incompletas, las de energía negativa y las repetidas |
+| **Antes (bronce)** | Las formas de escribir el municipio. **Bajen dentro de esa tabla**: al final aparecen `MEDELLIN`, `Medellín D.E.`, `Rio Negro`... con pocas filas cada una |
+| **Después (plata)** | **Un solo nombre** por municipio: las variantes se sumaron a su municipio correcto |
+| **Así quedaron las ventas limpias** | Columna nueva `municipio_id` (el código DIVIPOLA: `05212` = Copacabana); `CONTRATOS` y `bolsa` ahora son `Contrato` y `Bolsa`; los números ya son **números** (alineados a la derecha) |
 
 ### Ejercicio 3 · El mismo dato en las tres capas
 
