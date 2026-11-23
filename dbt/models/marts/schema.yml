@@ -1,0 +1,41 @@
+# Las PRUEBAS de calidad de la capa oro. dbt build las corre despues de crear cada tabla.
+# Si una falla, el pipeline se detiene: no llegan datos malos al dashboard.
+version: 2
+
+models:
+  - name: dim_mes
+    columns:
+      - name: mes_id
+        data_tests: [unique, not_null]          # un mes no se repite y no esta vacio
+
+  - name: dim_municipio
+    columns:
+      - name: municipio_id
+        data_tests: [unique, not_null]
+
+  - name: fact_ventas
+    columns:
+      - name: mes_id
+        data_tests:
+          - relationships:                      # cada venta apunta a un mes que existe
+              arguments:
+                to: ref('dim_mes')
+                field: mes_id
+      - name: municipio_id
+        data_tests:
+          - relationships:                      # y a un municipio que existe
+              arguments:
+                to: ref('dim_municipio')
+                field: municipio_id
+      - name: tipo_compra
+        data_tests:
+          - accepted_values:                    # solo estos dos valores
+              arguments:
+                values: ['Bolsa', 'Contrato']
+
+  - name: fact_mercado
+    columns:
+      - name: mes_id
+        data_tests: [unique, not_null]
+      - name: precio_bolsa_cop_kwh
+        data_tests: [not_null]                  # todos los meses de 2023 tienen precio

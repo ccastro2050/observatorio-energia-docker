@@ -1,0 +1,20 @@
+# Configuracion del proyecto dbt: como se llama y como se crea cada grupo de modelos.
+# Es un archivo YAML: no se ejecuta, dbt lo lee.
+
+# El nombre del proyecto
+name: observatorio
+# La version del proyecto (la escribe el equipo)
+version: "1.0.0"
+# Que conexion usar: la que se llama "observatorio" en profiles.yml
+profile: observatorio
+# La carpeta de los modelos (los archivos .sql)
+model-paths: ["models"]
+
+models:
+  observatorio:
+    # Los modelos de models/staging/ se crean como VISTAS (consultas guardadas)
+    staging:
+      +materialized: view
+    # Los de models/marts/ se crean como TABLAS reales: la capa oro
+    marts:
+      +materialized: table

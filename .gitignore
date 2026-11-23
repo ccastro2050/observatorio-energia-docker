@@ -1,0 +1,20 @@
+# Lo que Git NO sube al repositorio
+
+# Los datos que GENERA el pipeline: cada quien los genera al correrlo
+data/bronze/
+data/silver/
+data/gold/
+data/*.duckdb
+data/*.duckdb.wal
+
+# Lo que generan Python, dbt y el editor
+__pycache__/
+.pytest_cache/
+.venv/
+dbt/target/
+dbt/logs/
+dbt/.user.yml
+logs/
+.vscode/
+
+# OJO: data/insumos/ (el Excel) y data/ejemplo/ (el respaldo) SI se suben

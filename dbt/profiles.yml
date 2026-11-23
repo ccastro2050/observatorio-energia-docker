@@ -1,0 +1,12 @@
+# La conexion de dbt con la base de datos: un archivo DuckDB local.
+observatorio:
+  # La conexion que se usa por defecto
+  target: dev
+  outputs:
+    dev:
+      # El motor: DuckDB (viene con el paquete dbt-duckdb)
+      type: duckdb
+      # El archivo de la base, desde la raiz del proyecto
+      path: data/observatorio.duckdb
+      # Un modelo a la vez
+      threads: 1

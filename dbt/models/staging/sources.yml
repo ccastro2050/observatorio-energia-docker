@@ -1,0 +1,21 @@
+# Las FUENTES de dbt: los archivos Parquet que dbt va a leer.
+version: 2
+
+sources:
+  # La capa PLATA: las ventas ya limpias
+  - name: plata
+    meta:
+      # {name} se cambia por el nombre de la tabla -> data/silver/enerandes_ventas.parquet
+      external_location: "data/silver/{name}.parquet"
+    tables:
+      - name: enerandes_ventas
+
+  # La capa BRONCE: XM y NOAA, tal cual llegaron (todo es texto)
+  - name: bronce
+    meta:
+      external_location: "data/bronze/{name}.parquet"
+    tables:
+      - name: xm_embalses          # % de agua en los embalses, por dia (fraccion de 0 a 1)
+      - name: xm_precio_bolsa      # precio de bolsa, por dia (COP/kWh)
+      - name: xm_precio_contrato   # precio de los contratos, por dia (COP/kWh)
+      - name: noaa_oni             # el indice ONI de El Nino, por trimestre movil

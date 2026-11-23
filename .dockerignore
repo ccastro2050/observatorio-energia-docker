@@ -1,0 +1,12 @@
+# Lo que NO se copia a la imagen de Docker (la hace mas liviana y rapida)
+.git/
+.venv/
+__pycache__/
+.pytest_cache/
+data/bronze/
+data/silver/
+data/gold/
+data/*.duckdb
+dbt/target/
+dbt/logs/
+docs/

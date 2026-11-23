@@ -1,0 +1,28 @@
+# Los DOS contenedores del proyecto. Se prenden con un solo comando:
+#     docker compose up --build
+# y el aplicativo queda en http://localhost:8501
+
+services:
+
+  # 1. PIPELINE: bronce -> plata -> oro, con los valores de src/config.py.
+  #    Corre una vez, termina y se apaga. Deja todo listo para el aplicativo.
+  pipeline:
+    build: .                               # construye la imagen con el Dockerfile de esta carpeta
+    command: python -m src.pipeline        # el comando que ejecuta: las tres capas en orden
+    volumes:
+      - ./data:/app/data                   # la carpeta data/ se COMPARTE con su PC: ahi ve los archivos
+
+  # 2. APP: el aplicativo Streamlit (cargar, limpiar, oro, dashboard y explorar).
+  #    Espera a que el pipeline termine bien y se queda prendido.
+  app:
+    build: .                               # la misma imagen
+    command: >
+      streamlit run app/inicio.py
+      --server.port 8501 --server.address 0.0.0.0 --server.headless true
+    volumes:
+      - ./data:/app/data                   # lee y escribe en data/, la misma carpeta del pipeline
+    ports:
+      - "8501:8501"                        # puerto de su PC : puerto del contenedor
+    depends_on:
+      pipeline:
+        condition: service_completed_successfully   # arranca solo si el pipeline termino SIN error
