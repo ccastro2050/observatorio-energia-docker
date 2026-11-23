@@ -2,11 +2,25 @@
 
 Proyecto de curso: **Proyecto Integrado IV – Integración de Información** (IU Digital de Antioquia).
 
+## 🚀 Empiecen aquí: bajarlo y prenderlo
+
+Necesitan **Git** y **Docker Desktop abierto** (la ballena 🐳 en la barra de tareas). En la terminal de VS Code (*Terminal → New Terminal*):
+
+```powershell
+git clone https://github.com/ccastro2050/observatorio-energia-docker.git   # 1. bajar el proyecto a su PC
+cd observatorio-energia-docker                                             # 2. entrar a la carpeta
+docker compose up --build -d                                               # 3. construir y prender todo
+```
+
+Esperen de 3 a 5 minutos la primera vez y abran **http://localhost:8501**. **Desde ahí, todo es con clics**: sigan el **[PASO_A_PASO.md](PASO_A_PASO.md)**.
+
+---
+
+## Qué es
+
 Un aplicativo **completo y funcionando** que muestra el proceso de integración de información de punta a punta: **traer** datos de 3 fuentes, **limpiarlos**, **modelarlos** con dbt y **analizarlos** en un dashboard interactivo. Todo en **Python**, por **capas**, y con **un solo comando**.
 
 > **Para qué sirve.** Es la versión de referencia: se ejecuta, se estudia y luego cada equipo **aplica lo mismo a su proyecto**.
-
-> 📘 **¿Primera vez?** Sigan el **[PASO_A_PASO.md](PASO_A_PASO.md)**: cómo prenderlo y cómo usar el aplicativo, con pantallas y ejercicios.
 
 ![El proceso: XM, NOAA y EnerAndes entran a bronce; las ventas pasan a plata; dbt arma el oro; el aplicativo lo lee](docs/img/proceso_capas.png)
 
@@ -24,15 +38,9 @@ Un aplicativo **completo y funcionando** que muestra el proceso de integración 
 
 ---
 
-## 2. Ejecutarlo (un solo comando)
+## 2. Qué pasa al prenderlo
 
-En la terminal de VS Code:
-
-```powershell
-git clone https://github.com/ccastro2050/observatorio-energia-docker.git   # bajar el proyecto
-cd observatorio-energia-docker                                             # entrar a la carpeta
-docker compose up --build                                                  # construir y prender todo
-```
+Si lo prenden **sin** `-d` (`docker compose up --build`), la terminal muestra lo que va pasando:
 
 | Lo que se ve en la terminal | Qué significa |
 |---|---|
