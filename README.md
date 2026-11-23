@@ -40,17 +40,20 @@ docker compose up --build                                                  # con
 | `pipeline-1 exited with code 0` | El pipeline terminó **bien** y se apagó |
 | `app-1 | You can now view your Streamlit app` | El aplicativo está prendido |
 
-Abran **http://localhost:8501**.
+Abran **http://localhost:8501**: se abre el **Panel de control**.
 
 > 💡 Con `docker compose up --build -d` la terminal queda libre (`-d` = en segundo plano). Para apagar: `docker compose down`.
 
 ---
 
-## 3. El aplicativo: 5 páginas
+## 3. El aplicativo: todo sin comandos
+
+Después del `docker compose up`, **todo se hace desde el navegador**: no hay que volver a escribir comandos.
 
 | Página | Capa | Qué se hace |
 |---|---|---|
-| 📥 **1 · Cargar datos** | Bronce | Elegir métricas y fechas de **XM**, cambiar la **URL** de NOAA, **subir** otro Excel. Botón de respaldo si no hay internet |
+| 🎛️ **0 · Panel de control** (la de inicio) | Todas | Ver el **estado** de cada capa · 🗑️ **Empezar de cero** · ▶️ **Correr todo** o **solo una capa** · **subir otro Excel** de ventas. Al terminar, el **Dashboard se actualiza solo** |
+| 📥 **1 · Cargar datos** | Bronce | Elegir métricas y fechas de **XM**, cambiar la **URL** de NOAA, **subir** otro Excel (o descargar el original como plantilla). Botón de respaldo si no hay internet |
 | 🧹 **2 · Limpiar** | Plata | Ver las reglas, aplicarlas con un botón y comparar el **antes y el después** |
 | 🏅 **3 · Modelo oro** | Oro | Ejecutar **dbt build** con un botón: modelo estrella, **pruebas** y exportación |
 | 📊 **4 · Dashboard** | — | Las 3 preguntas de negocio, con **filtros** que mueven todo, y un **simulador** |
@@ -60,7 +63,7 @@ Abran **http://localhost:8501**.
 
 | Lo que aparece | Qué significa |
 |---|---|
-| Menú de la izquierda | Las 5 páginas: el proceso capa por capa y el resultado |
+| Menú de la izquierda | Las 6 páginas: el panel, el proceso capa por capa y el resultado |
 | **Filtros** (meses, fase ENSO, municipio, segmento) | Al moverlos, **todo** se recalcula: KPIs, gráficos y conclusiones |
 | Los 4 números de arriba | Los **KPIs**: embalses, precio de bolsa (y cuánto más caro que el contrato), energía vendida y % comprado en bolsa |
 | Las pestañas | Una por pregunta de negocio, más el **Simulador** |
@@ -103,10 +106,10 @@ observatorio-energia-docker\
 │       ├── staging\               ← ordenar lo que llega (texto -> numero, por dia o mes)
 │       └── marts\                 ← el modelo estrella (2 dimensiones, 2 hechos) y sus 10 pruebas
 ├── app\                           ← EL APLICATIVO (Streamlit)
-│   ├── inicio.py                  ← el menu de las 5 paginas: streamlit run app/inicio.py
+│   ├── inicio.py                  ← el menu de las 6 paginas: streamlit run app/inicio.py
 │   ├── datos.py                   ← la COCINA: lee el oro y calcula (sin Streamlit)
-│   └── paginas\                   ← el COMEDOR: cargar, limpiar, oro, dashboard, explorar
-├── tests\test_proceso.py          ← 4 pruebas: limpieza y calculos (pytest)
+│   └── paginas\                   ← el COMEDOR: panel, cargar, limpiar, oro, dashboard, explorar
+├── tests\test_proceso.py          ← 5 pruebas: limpieza, calculos y Excel subido (pytest)
 ├── data\
 │   ├── insumos\                   ← el Excel de ventas de EnerAndes (se sube a Git)
 │   ├── ejemplo\                   ← respaldo de XM y NOAA, por si no hay internet (se sube a Git)
@@ -147,7 +150,7 @@ observatorio-energia-docker\
 | `docker compose logs pipeline` | Ver lo que hizo el pipeline |
 | `docker compose run --rm pipeline` | Volver a correr **solo** el pipeline |
 | `docker compose down` | Apagar todo (los datos de `data/` se quedan) |
-| `docker compose run --rm app pytest -v` | Correr las 4 pruebas dentro del contenedor |
+| `docker compose run --rm app pytest -v` | Correr las 5 pruebas dentro del contenedor |
 
 ---
 

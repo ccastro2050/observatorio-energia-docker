@@ -9,15 +9,33 @@ El PIPELINE completo: las tres capas, en orden.
 
 En Docker lo ejecuta el contenedor 'pipeline' (docker-compose.yml).
 """
+# shutil: borrar carpetas completas (para empezar de cero)
+import shutil
 # time: para medir cuanto tarda
 import time
 
+# La configuracion: donde esta cada capa
+from src import config
 # Las tres capas
 from src.bronce import extraer
 from src.oro import construir
 from src.plata import limpiar
 # log: imprime mensajes con la hora
 from src.utils import log
+
+
+# Funcion: borra todo lo que genera el proceso, para empezar como recien clonado
+def empezar_de_cero() -> None:
+    """Borra bronce, plata, oro y la base DuckDB. NO borra insumos ni el respaldo (ejemplo)."""
+    # Las tres carpetas de las capas
+    for carpeta in (config.DIR_BRONCE, config.DIR_PLATA, config.DIR_ORO):
+        # ignore_errors=True: si la carpeta no existe, no pasa nada
+        shutil.rmtree(carpeta, ignore_errors=True)
+    # La base DuckDB y su archivo temporal (.wal), si existen
+    for archivo in (config.BASE_DUCKDB, config.BASE_DUCKDB.with_suffix(".duckdb.wal")):
+        # missing_ok=True: si no existe, no pasa nada
+        archivo.unlink(missing_ok=True)
+    log("Se borraron bronce, plata, oro y la base: todo empieza de cero")
 
 
 # Funcion principal: corre las tres capas una detras de otra

@@ -11,7 +11,8 @@ import streamlit as st
 
 # La configuracion y las funciones de la capa bronce
 from src import config
-from src.bronce.extraer import extraer_enerandes, extraer_noaa, extraer_xm, usar_respaldo
+from src.bronce.extraer import (COLUMNAS_EXCEL, extraer_enerandes, extraer_noaa, extraer_xm,
+                                guardar_excel_subido, usar_respaldo, volver_al_excel_original)
 
 # El titulo grande de la pagina
 st.title("📥 1 · Cargar datos: capa bronce")
@@ -105,21 +106,40 @@ with f3:
     # Subtitulo y nota gris de la pestana
     st.subheader("EnerAndes: el Excel interno de ventas")
     st.caption("Trae los errores típicos de un archivo hecho a mano: así se guarda en bronce.")
-    # st.file_uploader: el usuario arrastra su archivo; si no sube nada, se usa el incluido
-    subido = st.file_uploader("Subir otro Excel (opcional)", type=["xlsx"])
-    # Nota con el nombre del Excel que se usa si no suben nada
-    st.caption(f"Si no suben nada, se usa `data/insumos/{config.ENERANDES_EXCEL.name}`.")
-    # Al hacer clic, se lee el Excel y se guarda en bronce
-    if st.button("Cargar el Excel", type="primary"):
+    # Cual Excel se esta usando ahora: el subido o el original
+    st.info(f"Excel en uso: `data/insumos/{config.excel_activo().name}`"
+            + (" (subido por ustedes)" if config.ENERANDES_SUBIDO.exists() else " (el original)"))
+    # st.file_uploader: el usuario arrastra su archivo .xlsx
+    subido = st.file_uploader("Subir otro Excel de ventas", type=["xlsx"])
+    # El formato que debe tener: estas columnas, en la primera fila
+    st.caption(f"Debe tener estas columnas en la primera fila: `{'`, `'.join(COLUMNAS_EXCEL)}`.")
+    # st.download_button: descargar el Excel original, para usarlo de PLANTILLA
+    st.download_button("⬇️ Descargar el Excel original (plantilla)", config.ENERANDES_EXCEL.read_bytes(),
+                       file_name=config.ENERANDES_EXCEL.name)
+    # Si subio un archivo: se revisa y se guarda como el Excel activo
+    if subido is not None:
+        try:
+            tabla = guardar_excel_subido(subido)
+            st.success(f"✅ Excel guardado: {len(tabla):,} filas. Desde ahora TODO el proceso usa este "
+                       "Excel (también ▶️ Correr todo, en el Panel de control).")
+        except Exception as error:
+            st.error(f"No se pudo usar ese Excel: {error}")
+    # Dos botones: cargar a bronce el Excel en uso, o volver al original
+    e1, e2 = st.columns(2)
+    if e1.button("Cargar el Excel en uso a bronce", type="primary"):
         # try/except: si el Excel no se puede leer, se muestra el error
         try:
-            # Lee el Excel subido (o el incluido si 'subido' esta vacio) y lo guarda
-            tabla = extraer_enerandes(subido)
+            # Lee el Excel activo y lo guarda en bronce, tal cual
+            tabla = extraer_enerandes()
             st.success(f"✅ `bronze/enerandes_ventas.parquet`: {len(tabla):,} filas")
             # Muestra las primeras 10 filas, con sus errores tal cual
             st.dataframe(tabla.head(10), hide_index=True)
         except Exception as error:
             st.error(f"No se pudo leer el Excel: {error}")
+    # Volver al original: solo se activa si hay uno subido
+    if e2.button("↩️ Volver al Excel original", disabled=not config.ENERANDES_SUBIDO.exists()):
+        volver_al_excel_original()
+        st.success("Listo: se usa otra vez el Excel original.")
 
 # Una linea horizontal para separar
 st.divider()

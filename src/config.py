@@ -47,8 +47,15 @@ XM_METRICAS = [
 NOAA_ONI_URL = "https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt"
 
 # --- Fuente 3: EnerAndes (el Excel interno de ventas) ------------------------
-# La ruta del Excel de ventas, dentro de la carpeta de insumos
+# La ruta del Excel de ventas ORIGINAL, dentro de la carpeta de insumos
 ENERANDES_EXCEL = DIR_INSUMOS / "ventas_enerandes_2023.xlsx"
+# El Excel que el usuario SUBE desde el aplicativo se guarda aqui (no se sube a Git)
+ENERANDES_SUBIDO = DIR_INSUMOS / "ventas_enerandes_subido.xlsx"
+
+
+# Funcion: cual Excel usar. Si el usuario subio uno, ese; si no, el original
+def excel_activo() -> Path:
+    return ENERANDES_SUBIDO if ENERANDES_SUBIDO.exists() else ENERANDES_EXCEL
 
 # --- Como se pide a las APIs -------------------------------------------------
 HTTP_TIMEOUT = 60       # segundos maximos de espera por respuesta

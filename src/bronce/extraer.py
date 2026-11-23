@@ -89,10 +89,40 @@ def extraer_enerandes(archivo=None) -> pd.DataFrame:
     archivo: una ruta o un archivo subido desde la pagina; por defecto, el de data/insumos/.
     """
     # dtype=str: todo como texto; asi no se pierde nada de lo que escribio la empresa
-    tabla = pd.read_excel(archivo or config.ENERANDES_EXCEL, dtype=str)
+    # excel_activo(): el que subio el usuario, o el original si no ha subido ninguno
+    tabla = pd.read_excel(archivo or config.excel_activo(), dtype=str)
     # La guarda en data/bronze/enerandes_ventas.parquet
     guardar(tabla, config.DIR_BRONCE, "enerandes_ventas")
     return tabla
+
+
+# Las columnas que debe traer el Excel de ventas (la capa plata las necesita)
+COLUMNAS_EXCEL = ["Fecha", "Municipio", "Segmento", "Tipo_Compra", "Energia_kWh", "Valor_COP", "Clientes"]
+
+
+# Funcion: guarda el Excel que el usuario subio, para que TODO el proceso lo use
+def guardar_excel_subido(archivo) -> pd.DataFrame:
+    """
+    Revisa que el Excel tenga las columnas de COLUMNAS_EXCEL y lo guarda como el Excel activo
+    (data/insumos/ventas_enerandes_subido.xlsx). Si le faltan columnas, lanza un error que lo dice.
+    """
+    # Se lee para revisar las columnas (todo como texto)
+    tabla = pd.read_excel(archivo, dtype=str)
+    # Las columnas que el Excel NO trae
+    faltan = [c for c in COLUMNAS_EXCEL if c not in tabla.columns]
+    if faltan:
+        raise ValueError(f"Al Excel le faltan estas columnas: {', '.join(faltan)}. "
+                         f"Debe tener: {', '.join(COLUMNAS_EXCEL)}.")
+    # getvalue(): el contenido del archivo subido, tal cual; se escribe en data/insumos/
+    config.ENERANDES_SUBIDO.write_bytes(archivo.getvalue())
+    log(f"   + insumos/{config.ENERANDES_SUBIDO.name}: Excel subido ({len(tabla):,} filas)")
+    return tabla
+
+
+# Funcion: deja de usar el Excel subido y vuelve al original
+def volver_al_excel_original() -> None:
+    # missing_ok=True: si no habia uno subido, no pasa nada
+    config.ENERANDES_SUBIDO.unlink(missing_ok=True)
 
 
 # Funcion: el plan B cuando no hay internet o la API falla

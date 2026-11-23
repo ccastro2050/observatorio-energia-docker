@@ -29,10 +29,12 @@ for carpeta in (RAIZ, RAIZ / "app"):
 st.set_page_config(page_title="Observatorio Energía y Clima", page_icon="⚡", layout="wide")
 
 # st.navigation: el MENU de la izquierda, con una entrada por pagina.
-# url_path: la direccion de cada pagina (http://localhost:8501/cargar). El dashboard es la de inicio (/)
+# url_path: la direccion de cada pagina (http://localhost:8501/cargar). El panel es la de inicio (/)
 paginas = st.navigation({
     # Primer grupo del menu: las paginas de las capas
     "El proceso, capa por capa": [
+        # default=True: el panel de control es la pagina que se abre al entrar
+        st.Page("paginas/panel.py", title="0 · Panel de control", icon="🎛️", default=True),
         # st.Page: una pagina del menu (archivo, titulo, icono y direccion)
         st.Page("paginas/cargar.py", title="1 · Cargar datos (bronce)", icon="📥", url_path="cargar"),
         st.Page("paginas/limpiar.py", title="2 · Limpiar (plata)", icon="🧹", url_path="limpiar"),
@@ -40,8 +42,7 @@ paginas = st.navigation({
     ],
     # Segundo grupo del menu: el resultado
     "El resultado": [
-        # default=True: es la pagina que se abre al entrar
-        st.Page("paginas/dashboard.py", title="4 · Dashboard", icon="📊", default=True),
+        st.Page("paginas/dashboard.py", title="4 · Dashboard", icon="📊", url_path="dashboard"),
         st.Page("paginas/explorar.py", title="5 · Explorar capas", icon="🔎", url_path="explorar"),
     ],
 })

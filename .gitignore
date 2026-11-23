@@ -18,3 +18,6 @@ logs/
 .vscode/
 
 # OJO: data/insumos/ (el Excel) y data/ejemplo/ (el respaldo) SI se suben
+
+# El Excel que el usuario sube desde el aplicativo (cada quien sube el suyo)
+data/insumos/ventas_enerandes_subido.xlsx

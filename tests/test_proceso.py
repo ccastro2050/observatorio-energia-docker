@@ -74,3 +74,19 @@ def test_precio_por_fase():
     # El promedio de 800 y 1000 es 900
     assert resultado["El Niño"] == 900
     assert resultado["Neutral"] == 400
+
+
+# Prueba: un Excel sin las columnas correctas se rechaza con un mensaje claro
+def test_excel_subido_sin_columnas_se_rechaza():
+    # io.BytesIO: un "archivo" en memoria, como el que entrega st.file_uploader
+    import io
+
+    import pytest
+
+    from src.bronce.extraer import guardar_excel_subido
+    # Un Excel con una sola columna que no sirve
+    archivo = io.BytesIO()
+    pd.DataFrame({"otra": [1]}).to_excel(archivo, index=False)
+    # Debe lanzar ValueError diciendo que faltan columnas
+    with pytest.raises(ValueError, match="faltan estas columnas"):
+        guardar_excel_subido(io.BytesIO(archivo.getvalue()))
