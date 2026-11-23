@@ -50,10 +50,10 @@ st.dataframe([{"Capa": "🥉 Bronce", "Carpeta": "data/bronze/", **estado(config
              hide_index=True)
 
 
-# Funcion: corre una o varias capas y muestra en pantalla lo que van escribiendo
+# Funcion: corre una o varias capas, guarda lo que escribieron y recarga la pagina
 def correr(pasos: list, titulo: str) -> None:
-    # st.status: un recuadro que dice "trabajando..." y se puede abrir para ver el detalle
-    with st.status(titulo, expanded=True) as recuadro:
+    # st.spinner: circulo girando mientras trabaja
+    with st.spinner(f"{titulo}..."):
         # salida: aqui se guarda todo lo que el proceso escribe
         salida = StringIO()
         try:
@@ -62,16 +62,17 @@ def correr(pasos: list, titulo: str) -> None:
                 # Una vuelta por cada paso: (nombre, funcion)
                 for nombre, funcion in pasos:
                     funcion()
-            # Si todo salio bien: el recuadro queda en verde
-            recuadro.update(label=f"{titulo}: listo ✅", state="complete")
-            # Se borra la memoria del dashboard: la proxima vez lee los datos nuevos
-            st.cache_data.clear()
+            # Si todo salio bien
+            resultado = (True, f"{titulo}: listo ✅")
         # SystemExit: lo que lanza la capa oro si una prueba de dbt falla
         except (Exception, SystemExit) as error:
-            recuadro.update(label=f"{titulo}: falló ❌", state="error")
-            st.error(f"{error}")
-        # Lo que escribio el proceso, en letra fija, para leerlo
-        st.code(salida.getvalue() or "(sin mensajes)", language=None)
+            resultado = (False, f"{titulo}: falló ❌ — {error}")
+    # Se borra la memoria del dashboard: la proxima vez lee los datos nuevos
+    st.cache_data.clear()
+    # st.session_state: la "memoria" de la pagina; sobrevive a la recarga de abajo
+    st.session_state["ultima_corrida"] = (*resultado, salida.getvalue())
+    # st.rerun: vuelve a dibujar la pagina desde arriba, con la tabla de estado al dia
+    st.rerun()
 
 
 # --- El Excel de ventas: usar el original o subir otro ------------------------
@@ -110,7 +111,10 @@ with c1:
         empezar_de_cero()
         # Se borra la memoria del dashboard
         st.cache_data.clear()
-        st.success("Se borraron bronce, plata, oro y la base. Ahora: ▶️ Correr todo.")
+        # Se guarda el mensaje y se recarga la pagina, para que la tabla de estado diga "vacia"
+        st.session_state["ultima_corrida"] = (True, "Se borraron bronce, plata, oro y la base. "
+                                              "Ahora: ▶️ Correr todo.", "")
+        st.rerun()
 
 # Columna 2: correr las tres capas en orden
 with c2:
@@ -139,6 +143,17 @@ elif solo_plata:
     correr([PLATA], "Corriendo la capa plata")
 elif solo_oro:
     correr([ORO], "Corriendo la capa oro")
+
+# El resultado de la ultima vez que se corrio algo (lo guardo correr() antes de recargar)
+if "ultima_corrida" in st.session_state:
+    # bien: si salio bien; mensaje: el titulo; texto: lo que escribio el proceso
+    bien, mensaje, texto = st.session_state["ultima_corrida"]
+    # Verde si salio bien, rojo si fallo
+    (st.success if bien else st.error)(mensaje)
+    # Lo que escribio el proceso, en una seccion que se abre con clic
+    if texto:
+        with st.expander("Ver lo que hizo el proceso, paso a paso", expanded=True):
+            st.code(texto, language=None)
 
 st.divider()
 st.caption("¿Quieren elegir fechas, cambiar la URL o subir otro Excel? Usen la página 📥 1 · Cargar datos.")
