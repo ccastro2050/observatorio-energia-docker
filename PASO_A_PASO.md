@@ -8,6 +8,8 @@
 
 ### ¿De qué trata esta guía?
 
+> ⭐ **Es un plus, un ejemplo opcional.** No es un requisito de la entrega final: sirve para **ver el proceso completo funcionando** y como modelo para su proyecto. Se usa **casi sin comandos**: se prende una vez y luego todo es con clics, incluida la carga de archivos.
+
 Hasta ahora construimos el Observatorio **por partes**: extracción, calidad, dbt y dashboard, cada una con sus comandos. Esta guía muestra **el proceso completo funcionando en un solo aplicativo**, para **verlo de punta a punta** antes de terminar la entrega final.
 
 - Se prende con **un solo comando** (Docker).
