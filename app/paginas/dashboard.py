@@ -108,12 +108,17 @@ with p1:
     st.subheader("¿Cómo estuvieron los embalses y el precio mes a mes?")
     # El usuario elige que ver: botones de opcion en una fila
     ver = st.radio("Ver", ["Embalses (%)", "Precio de bolsa (COP/kWh)", "Los dos"], horizontal=True)
-    # Segun lo elegido, que columnas se grafican
-    columnas = {"Embalses (%)": ["embalses_pct"],
-                "Precio de bolsa (COP/kWh)": ["precio_bolsa_cop_kwh"],
-                "Los dos": ["embalses_pct", "precio_bolsa_cop_kwh"]}[ver]
-    # Grafico de lineas; y_label: el nombre del eje es lo que el usuario eligio
-    st.line_chart(m, x="mes", y=columnas, x_label="Mes", y_label=ver)
+    # Embalses y precio tienen escalas muy distintas (60-80 % frente a 200-1.000 COP/kWh):
+    # por eso "Los dos" muestra DOS graficos lado a lado, cada uno con su propio eje
+    if ver == "Los dos":
+        c1, c2 = st.columns(2)
+        c1.line_chart(m, x="mes", y="embalses_pct", x_label="Mes", y_label="Embalses (%)")
+        c2.line_chart(m, x="mes", y="precio_bolsa_cop_kwh", x_label="Mes",
+                      y_label="Precio de bolsa (COP/kWh)", color="#d62728")
+    # Si eligio solo uno: un grafico; y_label = el nombre que el usuario eligio
+    else:
+        columna = "embalses_pct" if ver == "Embalses (%)" else "precio_bolsa_cop_kwh"
+        st.line_chart(m, x="mes", y=columna, x_label="Mes", y_label=ver)
     # El mes con los embalses mas bajos (idxmin = la fila del minimo)
     minimo = m.loc[m["embalses_pct"].idxmin()]
     # El mes con el precio mas alto (idxmax = la fila del maximo)
@@ -133,8 +138,9 @@ with p2:
     # Dos graficos lado a lado: el ONI y los precios
     c1, c2 = st.columns(2)
     c1.line_chart(m, x="mes", y="oni", x_label="Mes", y_label="ONI (El Niño si ≥ 0,5)")
-    c2.line_chart(m, x="mes", y=["precio_bolsa_cop_kwh", "precio_contrato_cop_kwh"],
-                  x_label="Mes", y_label="Precio (COP/kWh)")
+    # Nombres claros para la leyenda: Bolsa y Contrato (en vez de los nombres de columna)
+    precios = m.rename(columns={"precio_bolsa_cop_kwh": "Bolsa", "precio_contrato_cop_kwh": "Contrato"})
+    c2.line_chart(precios, x="mes", y=["Bolsa", "Contrato"], x_label="Mes", y_label="Precio (COP/kWh)")
     # Dispersion: cada punto es un mes (ONI contra precio), con color segun la fase
     st.scatter_chart(m, x="oni", y="precio_bolsa_cop_kwh", color="fase_enso", size=200,
                      x_label="ONI", y_label="Precio de bolsa (COP/kWh)")

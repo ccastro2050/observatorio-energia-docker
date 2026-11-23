@@ -319,6 +319,18 @@ Se llama **volumen**: lo que el contenedor escribe, ustedes lo ven en el PC, y a
 | **Después (plata)** | **Un solo nombre** por municipio: las variantes se sumaron a su municipio correcto |
 | **Así quedaron las ventas limpias** | Columna nueva `municipio_id` (el código DIVIPOLA: `05212` = Copacabana); `CONTRATOS` y `bolsa` ahora son `Contrato` y `Bolsa`; los números ya son **números** (alineados a la derecha) |
 
+### La página 3: el modelo oro con dbt
+
+![La página Modelo oro: el modelo estrella en imagen, PASS=17 y las 4 tablas exportadas con sus filas](docs/img/app_oro.png)
+
+| Lo que aparece | Qué significa |
+|---|---|
+| La imagen del **modelo estrella** | Lo que dbt construye: 2 **dimensiones** (azules) y 2 tablas de **hechos** (amarillas), unidas por sus **llaves** (`mes_id`, `municipio_id`) |
+| **Ejecutar dbt build y exportar** | Corre `dbt build` (crear los modelos y probarlos) y copia las tablas a `data/gold/` |
+| ✅ `PASS=17 WARN=0 ERROR=0` | **7 modelos** creados y **10 pruebas** de calidad pasadas. Si una prueba falla, sale en rojo y **no se exporta nada** |
+| **Tablas exportadas a `data/gold/`** | `dim_mes` 12 meses · `dim_municipio` 15 municipios · `fact_ventas` 1.043 ventas · `fact_mercado` 12 meses |
+| **Ver lo que escribió dbt** | El detalle: cada modelo y cada prueba, uno por uno |
+
 ### Ejercicio 3 · El mismo dato en las tres capas
 
 En **🔎 5 · Explorar capas**, escriban `Medellín` en el buscador y cambien de capa:
