@@ -153,7 +153,16 @@ Clic en **📊 Ver el Dashboard**. Ya tiene los datos nuevos: **se actualizó so
 
 ### Pestaña 1 · Riesgo hídrico
 
-Arriba, **Ver** deja elegir qué graficar: embalses, precio o **los dos**. Al elegir **Los dos** se ve que, cuando bajan los embalses, sube el precio.
+Arriba, **Ver** deja elegir qué graficar: embalses, precio o **los dos**. Con **Los dos** salen dos gráficos lado a lado, **cada uno con su propio eje** (los embalses van de 60 a 80 % y el precio de 200 a 1.000 COP/kWh: en un solo eje, los embalses quedarían aplastados).
+
+![La pestaña Riesgo hídrico con Ver = Los dos: los embalses en azul a la izquierda y el precio de bolsa en rojo a la derecha](docs/img/app_los_dos.png)
+
+| Lo que se ve | Qué significa |
+|---|---|
+| **Embalses** (azul) | Bajan de 77 % en enero a **59,6 % en abril**, el fondo, y se recuperan con las lluvias de mitad de año |
+| **Precio de bolsa** (rojo) | Sube en mayo y se **dispara en septiembre y octubre**, a más de 1.000 COP/kWh: empieza El Niño fuerte |
+| Recuadro azul | La conclusión: el mes más seco y el más caro, **calculados** por el código |
+| **Ver la tabla mes a mes** | Los números exactos de cada mes; con clic en un encabezado se ordena |
 
 ### Pestaña 2 · Clima → precio
 
@@ -178,6 +187,8 @@ Arriba, **Ver** deja elegir qué graficar: embalses, precio o **los dos**. Al el
 | Recuadro azul | Comprar en bolsa lo que se compró por contrato habría costado **155.177 millones más** |
 | **Dónde está el riesgo, por** | Elegir **municipio** o **segmento** |
 | Barras horizontales | Lo que costó de más la energía que **sí** se compró en bolsa. **Medellín** concentra el mayor riesgo |
+| Con **segmento** | El riesgo lo carga el **Residencial** (unos 19.000 millones), luego el Industrial (unos 14.000) y el Comercial (unos 11.000): conviene asegurar por contrato la energía de los hogares |
+| **Abril** | El único mes en que la bolsa habría salido **más barata** que el contrato: todavía no había llegado El Niño |
 
 ### Pestaña 4 · Simulador
 
@@ -190,6 +201,8 @@ Muevan el control **Energía comprada en bolsa (%)**:
 | 22 % (lo que hizo EnerAndes) | Unos **44.000 millones más** |
 | 60 % | Unos **120.000 millones más** |
 | 0 % | Lo mismo que todo por contrato |
+
+**Lectura:** en 2023, cada **punto** que se pasa a bolsa cuesta unos **2.000 millones más** (de 15 % a 45 % son unos 60.000 millones adicionales).
 
 **La lección para la gerencia:** asegurar contratos **antes** de que llegue El Niño.
 
