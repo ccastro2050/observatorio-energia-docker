@@ -238,6 +238,36 @@ Las páginas 1, 2 y 3 hacen lo mismo que **Correr todo**, pero **capa por capa**
 | **🏅 3 · Modelo oro** (dbt) | Ejecutar **dbt build** | El modelo estrella, `PASS=17` y las 4 tablas exportadas |
 | **🔎 5 · Explorar capas** | Elegir una capa y un archivo, y **buscar** dentro | El mismo dato en bronce (texto), plata (limpio) y oro (modelo) |
 
+### La página 1, pestaña XM: traer los datos de la API
+
+![La página Cargar datos, pestaña XM: las 3 métricas, las fechas, el botón Descargar de XM y el aviso XM: listo](docs/img/app_xm_listo.png)
+
+| Lo que aparece | Qué significa |
+|---|---|
+| `API: https://servapibi.xm.com.co/daily · método POST · máximo 30 días por consulta` | La dirección de la API de XM y su límite: por eso el código pide el año en **pedazos de 30 días** |
+| **Métricas**: `xm_embalses (PorcVoluUtilDiar)`, `xm_precio_bolsa (PPPrecBolsNaci)`, `xm_precio_contrato (PrecPromCont)` | Qué se le pide a XM. Primero el **nombre del archivo** en bronce y, entre paréntesis, el **código de la métrica** en XM |
+| **Desde / Hasta** | El rango de fechas. Debajo dice cuántas consultas hará: 365 días → 13 por métrica |
+| **Descargar de XM** | Pide los datos y los guarda en `data/bronze/`, tal cual llegan |
+| **XM: listo** ✓ | Terminó. Con un clic en el recuadro se ven los archivos guardados y sus filas |
+| **Usar el respaldo de XM (sin internet)** | Si XM no responde, copia los datos de `data/ejemplo/` |
+
+**¿Se pueden quitar o poner métricas?** Sí, pero **solo entre esas 3**: se quitan con la **✕** y se vuelven a poner desde la flecha **⌄**. Si se quita una y luego se corre la capa oro, la página 3 avisa *"Faltan archivos: xm_..."*, porque **dbt necesita las 3** para armar el modelo. Así se ve que **cada capa depende de la anterior**.
+
+**¿Y cómo se agrega una métrica NUEVA?** No desde la app: en el **código**, recorriendo **toda la cadena**. Por ejemplo, la demanda de energía:
+
+| # | Archivo | Qué se agrega | Ejemplo: la demanda |
+|---|---|---|---|
+| 1 | `src/config.py` → `XM_METRICAS` | Una línea con el código de XM y el nombre del archivo | `("DemaReal", "Sistema", "xm_demanda"),` |
+| 2 | El aplicativo, página 1 | **Nada**: la métrica aparece sola en la lista y se guarda en bronce | `bronze/xm_demanda.parquet` |
+| 3 | `dbt/models/staging/sources.yml` | Declarar el archivo nuevo | `- name: xm_demanda` |
+| 4 | `dbt/models/staging/stg_mercado_diario.sql` | Pasarla a número y unirla por fecha | `try_cast(d."Value" as double) as demanda_kwh` |
+| 5 | `dbt/models/marts/fact_mercado.sql` | El total o el promedio del mes | `sum(demanda_kwh) as demanda_kwh` |
+| 6 | `app/paginas/dashboard.py` | Un gráfico o una pestaña nueva | `st.line_chart(m, x="mes", y="demanda_kwh")` |
+
+> 💡 **Por qué así:** cada capa tiene que saber qué hacer con el dato nuevo. La app solo pone **botones encima** del proceso: el proceso se define en el código. Es lo mismo que hace cada equipo en la entrega final con **sus** métricas. Los códigos de XM están en el catálogo: https://github.com/EquipoAnaliticaXM/API_XM
+
+### La página 2: limpiar
+
 ![La página Limpiar: las reglas, las filas antes y después, y el municipio escrito de varias formas frente a un solo nombre](docs/img/app_limpiar.png)
 
 ### Ejercicio 3 · El mismo dato en las tres capas
